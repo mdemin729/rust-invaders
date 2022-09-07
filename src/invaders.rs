@@ -44,7 +44,7 @@ impl Invaders {
             let mut downwards = false;
             if self.direction == -1 {
                 let min_x = self.army.iter().map(|invader| invader.x).min().unwrap_or(0);
-                if (min_x == 0) {
+                if min_x == 0 {
                     self.direction = 1;
                     downwards = true;
                 }
