@@ -1,22 +1,21 @@
-use std::error::Error;
-use std::{io, thread};
-use std::sync::mpsc;
-use std::time::{Duration, Instant};
-use crossterm::{event, ExecutableCommand, terminal};
 use crossterm::cursor::{Hide, Show};
 use crossterm::event::{Event, KeyCode};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
-use rusty_audio::Audio;
+use crossterm::{event, terminal, ExecutableCommand};
 use invaders::frame;
-use invaders::frame::{Drawable, new_frame};
+use invaders::frame::{new_frame, Drawable};
 use invaders::invaders::Invaders;
 use invaders::player::Player;
 use invaders::render;
+use rusty_audio::Audio;
+use std::error::Error;
+use std::sync::mpsc;
+use std::time::{Duration, Instant};
+use std::{io, thread};
 
 fn main() -> Result<(), Box<dyn Error>> {
-
     let mut audio = Audio::new();
-    audio.add("explode","sounds/explode.wav");
+    audio.add("explode", "sounds/explode.wav");
     audio.add("lose", "sounds/lose.wav");
     audio.add("move", "sounds/move.wav");
     audio.add("pew", "sounds/pew.wav");
@@ -37,11 +36,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut last_frame = frame::new_frame();
         let mut stdout = io::stdout();
         render::render(&mut stdout, &last_frame, &last_frame, true);
-        loop {
-            let curr_frame = match render_rx.recv() {
-                Ok(x) => x,
-                Err(_) => break
-            };
+
+        while let Ok(curr_frame) = render_rx.recv() {
             render::render(&mut stdout, &last_frame, &curr_frame, false);
             last_frame = curr_frame;
         }
@@ -67,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         if player.shoot() {
                             audio.play("pew");
                         }
-                    },
+                    }
                     KeyCode::Esc | KeyCode::Char('q') => {
                         audio.play("lose");
                         break 'gameloop;

@@ -1,8 +1,8 @@
+use crate::frame::{Drawable, Frame};
+use crate::{NUM_COLS, NUM_ROWS};
+use rusty_time::timer::Timer;
 use std::cmp::max;
 use std::time::Duration;
-use rusty_time::timer::Timer;
-use crate::{NUM_COLS, NUM_ROWS};
-use crate::frame::{Drawable, Frame};
 
 pub struct Invader {
     pub x: usize,
@@ -25,7 +25,8 @@ impl Invaders {
                     && (y > 0)
                     && (y < 9)
                     && (x % 2 == 0)
-                    && (y % 2 == 0) {
+                    && (y % 2 == 0)
+                {
                     army.push(Invader { x, y });
                 }
             }
@@ -78,7 +79,11 @@ impl Invaders {
         self.army.iter().map(|invader| invader.y).max().unwrap_or(0) >= NUM_ROWS - 1
     }
     pub fn kill_invader_at(&mut self, x: usize, y: usize) -> bool {
-        if let Some(idx) = self.army.iter().position(|inv| (inv.x == x) && (inv.y == y)) {
+        if let Some(idx) = self
+            .army
+            .iter()
+            .position(|inv| (inv.x == x) && (inv.y == y))
+        {
             self.army.remove(idx);
             true
         } else {
@@ -90,14 +95,20 @@ impl Invaders {
 impl Drawable for Invaders {
     fn draw(&self, frame: &mut Frame) {
         for invader in self.army.iter() {
-            frame[invader.x][invader.y] =
-                if (self.move_timer.time_left.as_millis() == 0) ||
-                    (self.move_timer.duration.as_millis()
-                        / self.move_timer.time_left.as_millis()) > 2 {
-                    "x"
-                } else {
-                    "+"
-                };
+            frame[invader.x][invader.y] = if (self.move_timer.time_left.as_millis() == 0)
+                || (self.move_timer.duration.as_millis() / self.move_timer.time_left.as_millis())
+                    > 2
+            {
+                "x"
+            } else {
+                "+"
+            };
         }
+    }
+}
+
+impl Default for Invaders {
+    fn default() -> Self {
+        Self::new()
     }
 }
